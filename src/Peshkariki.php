@@ -17,16 +17,23 @@ class Peshkariki
     private $tokenFile = __DIR__ . '/../token';
     private $client;
 
+    /**
+     * Peshkariki constructor.
+     */
     public function __construct()
     {
+        $this->client = new Client(['base_uri' => $this->url]);
+
         $this->token = file_get_contents($this->tokenFile);
         if (empty($this->token)) {
             $this->auth();
         }
 
-        $this->client = new Client(['base_uri' => $this->url]);
     }
 
+    /**
+     * @return bool
+     */
     private function auth()
     {
         $request = new Request('POST', 'login');
@@ -58,6 +65,18 @@ class Peshkariki
         return false;
     }
 
+    /**
+     * @param Peshkaricals $order
+     * @param PeshkaricalsTakesPoint $takesPoint
+     * @param bool $calculate
+     * @param bool $clearing
+     * @param bool $bonus_payment
+     * @param bool $cash
+     * @param bool $who_pay
+     * @param int $courier_additional
+     * @param string $promoCode
+     * @return bool
+     */
     public function addDeliveryRequest(Peshkaricals $order, PeshkaricalsTakesPoint $takesPoint, bool $calculate = false, bool $clearing = false, bool $bonus_payment = false, bool $cash = false, bool $who_pay = true, $courier_additional = 0, $promoCode = '')
     {
         $request = new Request('POST', 'addOrder');
@@ -140,6 +159,10 @@ class Peshkariki
         return false;
     }
 
+    /**
+     * @param Peshkaricals $order
+     * @return bool|string
+     */
     public function cancelDeliveryRequest(Peshkaricals $order)
     {
         $request = new Request('POST', 'cancelOrder');
@@ -177,6 +200,10 @@ class Peshkariki
         return false;
     }
 
+    /**
+     * @param Peshkaricals $order
+     * @return bool
+     */
     public function orderDetails(Peshkaricals $order) {
         $request = new Request('POST', 'orderDetail');
 
@@ -208,6 +235,9 @@ class Peshkariki
         return false;
     }
 
+    /**
+     * @return bool
+     */
     public function checkBalance() {
         $request = new Request('POST', 'checkBalance');
 
@@ -236,6 +266,10 @@ class Peshkariki
         return false;
     }
 
+    /**
+     * @param $telephone
+     * @return bool
+     */
     public function checkTelephone($telephone) {
         $request = new Request('POST', 'checkPhone');
 
@@ -273,6 +307,9 @@ class Peshkariki
         return false;
     }
 
+    /**
+     * @return bool
+     */
     public function revokeToken() {
         $request = new Request('POST', 'revokeToken');
 
