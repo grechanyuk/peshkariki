@@ -51,6 +51,7 @@ class Peshkariki
                 if ($token->success) {
                     file_put_contents($this->tokenFile, '');
                     file_put_contents($this->tokenFile, $token->response->token);
+                    $this->token = $token->response->token;
                     return true;
                 } else {
                     return false;
