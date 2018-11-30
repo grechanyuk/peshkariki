@@ -151,7 +151,7 @@ class Peshkariki
             }
         } catch (ExpiredTokenException $e) {
             if($this->auth()) {
-                $this->addDeliveryRequest($order, $takesPoint, $calculate, $clearing, $bonus_payment, $cash, $who_pay, $courier_additional, $promoCode);
+                return $this->addDeliveryRequest($order, $takesPoint, $calculate, $clearing, $bonus_payment, $cash, $who_pay, $courier_additional, $promoCode);
             }
         } catch (GuzzleException $e) {
             //Ошибка запроса
@@ -190,7 +190,7 @@ class Peshkariki
             }
         } catch (ExpiredTokenException $e) {
             if($this->auth()) {
-                $this->cancelDeliveryRequest($order);
+                return $this->cancelDeliveryRequest($order);
             }
         } catch(CourierAlreadyGo $e) {
             return 'Отмена невозможна, курьер уже выехал';
@@ -227,7 +227,7 @@ class Peshkariki
             }
         } catch (ExpiredTokenException $e) {
             if($this->auth()) {
-                $this->orderDetails($order);
+                return $this->orderDetails($order);
             }
         } catch (GuzzleException $e) {
             //Ощибка соединения
@@ -259,7 +259,7 @@ class Peshkariki
             }
         } catch (ExpiredTokenException $e) {
             if($this->auth()) {
-                $this->checkBalance();
+                return $this->checkBalance();
             }
         } catch (GuzzleException $e) {
         }
@@ -300,7 +300,7 @@ class Peshkariki
 
         } catch (ExpiredTokenException $e) {
             if($this->auth()) {
-                $this->checkTelephone($telephone);
+                return $this->checkTelephone($telephone);
             }
         } catch (GuzzleException $e) {
         }
