@@ -67,7 +67,7 @@ class Peshkariki
     }
 
     /**
-     * @param Peshkaricals $order
+     * @param Peshkaricals|array $order
      * @param PeshkaricalsTakesPoint $takesPoint
      * @param bool $calculate
      * @param bool $clearing
@@ -78,57 +78,76 @@ class Peshkariki
      * @param string $promoCode
      * @return bool
      */
-    public function addDeliveryRequest(Peshkaricals $order, PeshkaricalsTakesPoint $takesPoint, bool $calculate = false, bool $clearing = false, bool $bonus_payment = false, bool $cash = false, bool $who_pay = true, $courier_additional = 0, $promoCode = '')
+    public function addDeliveryRequest($order, PeshkaricalsTakesPoint $takesPoint, bool $calculate = false, bool $clearing = false, bool $bonus_payment = false, bool $cash = false, bool $who_pay = true, $courier_additional = 0, $promoCode = '')
     {
         $request = new Request('POST', 'addOrder');
+
+        if(is_array($order)) {
+            $default = [
+                'inner_id' => 0,
+                'comment' => '',
+                'calculate' => $calculate,
+                'clearing' => $clearing,
+                'bonus_payment' => $bonus_payment,
+                'cash' => $cash,
+                'who_pay' => $who_pay,
+                'courier_addition' => $courier_additional,
+                'ewalletType' => config('peshkariki.ewalletType'),
+                'ewallet' => config('peshkariki.ewallet'),
+                'promo_code' => $promoCode
+            ];
+            $options = array_merge($default, $order);
+        } else {
+            $options = [
+                'inner_id' => $order->getPeshkaricalsOrderId(),
+                'comment' => $order->getPeshkaricalsShortDescription(),
+                'calculate' => $calculate,
+                'clearing' => $clearing,
+                'bonus_payment' => $bonus_payment,
+                'cash' => $cash,
+                'who_pay' => $who_pay,
+                'courier_addition' => $courier_additional,
+                'ewalletType' => config('peshkariki.ewalletType'),
+                'ewallet' => config('peshkariki.ewallet'),
+                'promo_code' => $promoCode,
+                'city_id' => $order->getPeshkaricalsCityId(),
+                'route' => [
+                    [
+                        'name' => $takesPoint->getPeshkaricalsTakesPointName(),
+                        'phone' => $takesPoint->getPeshkaricalsTakesPointTelephone(),
+                        'city' => $takesPoint->getPeshkaricalsTakesPointSuburb(),
+                        'street' => $takesPoint->getPeshkaricalsTakesPointStreet(),
+                        'building' => $takesPoint->getPeshkaricalsTakesPointBuilding(),
+                        'apartments' => $takesPoint->getPeshkaricalsTakesPointApartment(),
+                        'subway_id' => $takesPoint->getPeshkaricalsTakesPointSubwayId(),
+                        'time_from' => date('Y-m-d', strtotime($order->getPeshkaricalsClientTimeFrom())) . ' ' . config('peshkariki.time_from'),
+                        'time_to' => date('Y-m-d H:i:s', strtotime($order->getPeshkaricalsClientTimeTo())),
+                        'target' => $takesPoint->getPeshkaricalsTakesPointComment(),
+                        'return_dot' => 1
+                    ],
+                    [
+                        'name' => $order->getPeshkaricalsClientName(),
+                        'phone' => $order->getPeshkaricalsClientTelephone(),
+                        'city' => $order->getPeshkaricalsSuburb(),
+                        'street' => $order->getPeshkaricalsClientStreet(),
+                        'building' => $order->getPeshkaricalsClientBuilding(),
+                        'apartments' => $order->getPeshkaricalsClientApartment(),
+                        'subway_id' => $order->getPeshkaricalsClientSubwayId(),
+                        'time_from' => $order->getPeshkaricalsClientTimeFrom(),
+                        'time_to' => $order->getPeshkaricalsClientTimeTo(),
+                        'target' => $order->getPeshkaricalsCommentToCourier(),
+                        'return_dot' => 0,
+                        'delivery_price_to_return' => $order->getPeshkaricalsReturnMoneyAmount(),
+                        'items' => $order->getPeshkaricalsProducts()
+                    ]
+                ]
+            ];
+        }
 
         try {
             $response = $this->client->send($request, [
                 'json' => [
-                    'orders' => [[
-                        'inner_id' => $order->getPeshkaricalsOrderId(),
-                        'comment' => $order->getPeshkaricalsShortDescription(),
-                        'calculate' => $calculate,
-                        'clearing' => $clearing,
-                        'bonus_payment' => $bonus_payment,
-                        'cash' => $cash,
-                        'who_pay' => $who_pay,
-                        'courier_addition' => $courier_additional,
-                        'ewalletType' => config('peshkariki.ewalletType'),
-                        'ewallet' => config('peshkariki.ewallet'),
-                        'promo_code' => $promoCode,
-                        'city_id' => $order->getPeshkaricalsCityId(),
-                        'route' => [
-                            [
-                                'name' => $takesPoint->getPeshkaricalsTakesPointName(),
-                                'phone' => $takesPoint->getPeshkaricalsTakesPointTelephone(),
-                                'city' => $takesPoint->getPeshkaricalsTakesPointSuburb(),
-                                'street' => $takesPoint->getPeshkaricalsTakesPointStreet(),
-                                'building' => $takesPoint->getPeshkaricalsTakesPointBuilding(),
-                                'apartments' => $takesPoint->getPeshkaricalsTakesPointApartment(),
-                                'subway_id' => $takesPoint->getPeshkaricalsTakesPointSubwayId(),
-                                'time_from' => date('Y-m-d', strtotime($order->getPeshkaricalsClientTimeFrom())) . ' ' . config('peshkariki.time_from'),
-                                'time_to' => date('Y-m-d H:i:s', strtotime($order->getPeshkaricalsClientTimeTo())),
-                                'target' => $takesPoint->getPeshkaricalsTakesPointComment(),
-                                'return_dot' => 1
-                            ],
-                            [
-                                'name' => $order->getPeshkaricalsClientName(),
-                                'phone' => $order->getPeshkaricalsClientTelephone(),
-                                'city' => $order->getPeshkaricalsSuburb(),
-                                'street' => $order->getPeshkaricalsClientStreet(),
-                                'building' => $order->getPeshkaricalsClientBuilding(),
-                                'apartments' => $order->getPeshkaricalsClientApartment(),
-                                'subway_id' => $order->getPeshkaricalsClientSubwayId(),
-                                'time_from' => $order->getPeshkaricalsClientTimeFrom(),
-                                'time_to' => $order->getPeshkaricalsClientTimeTo(),
-                                'target' => $order->getPeshkaricalsCommentToCourier(),
-                                'return_dot' => 0,
-                                'delivery_price_to_return' => $order->getPeshkaricalsReturnMoneyAmount(),
-                                'items' => $order->getPeshkaricalsProducts()
-                            ]
-                        ]
-                    ]],
+                    'orders' => [$options],
                     'token' => $this->token
                 ]
             ]);
