@@ -94,7 +94,24 @@ class Peshkariki
                 'courier_addition' => $courier_additional,
                 'ewalletType' => config('peshkariki.ewalletType'),
                 'ewallet' => config('peshkariki.ewallet'),
-                'promo_code' => $promoCode
+                'promo_code' => $promoCode,
+                'city_id' => $order['city_id'],
+                'route' => [
+                    [
+                        'name' => $takesPoint->getPeshkaricalsTakesPointName(),
+                        'phone' => $takesPoint->getPeshkaricalsTakesPointTelephone(),
+                        'city' => $takesPoint->getPeshkaricalsTakesPointSuburb(),
+                        'street' => $takesPoint->getPeshkaricalsTakesPointStreet(),
+                        'building' => $takesPoint->getPeshkaricalsTakesPointBuilding(),
+                        'apartments' => $takesPoint->getPeshkaricalsTakesPointApartment(),
+                        'subway_id' => $takesPoint->getPeshkaricalsTakesPointSubwayId(),
+                        'time_from' => date('Y-m-d', strtotime($order->getPeshkaricalsClientTimeFrom())) . ' ' . config('peshkariki.time_from'),
+                        'time_to' => date('Y-m-d H:i:s', strtotime($order->getPeshkaricalsClientTimeTo())),
+                        'target' => $takesPoint->getPeshkaricalsTakesPointComment(),
+                        'return_dot' => 1
+                    ],
+                    $order['route']
+                ]
             ];
             $options = array_merge($default, $order);
         } else {
