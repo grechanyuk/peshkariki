@@ -83,7 +83,7 @@ class Peshkariki
         $request = new Request('POST', 'addOrder');
 
         if(is_array($order)) {
-            $default = [
+            $options = [
                 'inner_id' => 0,
                 'comment' => '',
                 'calculate' => $calculate,
@@ -113,7 +113,6 @@ class Peshkariki
                     $order['route']
                 ]
             ];
-            $options = array_merge($default, $order);
         } else {
             $options = [
                 'inner_id' => $order->getPeshkaricalsOrderId(),
