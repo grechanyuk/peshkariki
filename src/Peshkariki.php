@@ -72,13 +72,13 @@ class Peshkariki
      * @param bool $calculate
      * @param bool $clearing
      * @param bool $bonus_payment
-     * @param bool $cash
+     * @param int $cash
      * @param bool $who_pay
      * @param int $courier_additional
      * @param string $promoCode
      * @return bool|object
      */
-    public function addDeliveryRequest($order, PeshkaricalsTakesPoint $takesPoint, bool $calculate = false, bool $clearing = false, bool $bonus_payment = false, bool $cash = false, bool $who_pay = true, $courier_additional = 0, $promoCode = '')
+    public function addDeliveryRequest($order, PeshkaricalsTakesPoint $takesPoint, bool $calculate = false, bool $clearing = false, bool $bonus_payment = false, $cash = 0, bool $who_pay = true, $courier_additional = 0, $promoCode = '')
     {
         $request = new Request('POST', 'addOrder');
 
@@ -176,7 +176,7 @@ class Peshkariki
                         return $response->response->delivery_price;
                     }
 
-                    return json_decode($response->response);
+                    return $response->response;
 
                 } elseif ($response->code == 12) {
                     throw new ExpiredTokenException();
