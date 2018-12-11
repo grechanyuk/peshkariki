@@ -76,7 +76,7 @@ class Peshkariki
      * @param bool $who_pay
      * @param int $courier_additional
      * @param string $promoCode
-     * @return bool
+     * @return bool|object
      */
     public function addDeliveryRequest($order, PeshkaricalsTakesPoint $takesPoint, bool $calculate = false, bool $clearing = false, bool $bonus_payment = false, bool $cash = false, bool $who_pay = true, $courier_additional = 0, $promoCode = '')
     {
@@ -176,9 +176,7 @@ class Peshkariki
                         return $response->response->delivery_price;
                     }
 
-                    foreach ($response->response as $item) {
-                        return $item->id;
-                    }
+                    return json_decode($response->response);
 
                 } elseif ($response->code == 12) {
                     throw new ExpiredTokenException();
