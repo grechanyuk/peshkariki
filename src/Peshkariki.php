@@ -105,8 +105,8 @@ class Peshkariki
                         'building' => $takesPoint->getPeshkaricalsTakesPointBuilding(),
                         'apartments' => $takesPoint->getPeshkaricalsTakesPointApartment(),
                         'subway_id' => $takesPoint->getPeshkaricalsTakesPointSubwayId(),
-                        'time_from' => date('Y-m-d', strtotime($order->getPeshkaricalsClientTimeFrom())) . ' ' . config('peshkariki.time_from'),
-                        'time_to' => date('Y-m-d H:i:s', strtotime($order->getPeshkaricalsClientTimeTo())),
+                        'time_from' => date('Y-m-d', strtotime($order['route']['time_from'])) . ' ' . config('peshkariki.time_from'),
+                        'time_to' => date('Y-m-d H:i:s', strtotime($order['route']['time_to'])),
                         'target' => $takesPoint->getPeshkaricalsTakesPointComment(),
                         'return_dot' => 1
                     ],
